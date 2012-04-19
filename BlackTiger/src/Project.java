@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Project {
 	
-	final static String xp_path = "/Users/csea/git/BlackTiger/BlackTiger";
+	final static String xp_path = "/Users/csea/git/CoincidentalCorrectness/BlackTiger";
 	
 	public Project()
 	{
