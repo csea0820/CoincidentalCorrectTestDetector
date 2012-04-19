@@ -16,7 +16,7 @@ public class Project {
 	
 	public void analysis(String [] programs)
 	{
-		int cc = 0,clusters = 0;
+		int cc = 0,clusters = 0,totalCC = 0,passTestSize = 0;
 		for (String prog: programs)
 		{
 			List<Integer> versions = readVersion(xp_path+"/"+prog+"/versions.txt");		
@@ -30,13 +30,17 @@ public class Project {
 				
 				v.go(xp_path+"/"+prog+"/testCaseExecutedStmts/v"+id, 
 						xp_path+"/"+prog+"/coinCidentalCorrectness/coincidentalCorrectness."+id);
-				cc += v.getCoincidentalCorrectnessFound();
+				totalCC += v.getM_coincidnetCorrectnessTotalCnt();
+				passTestSize += v.getPassTestSize();
+				cc += v.getm_coincidentalCorrectnessTotalFound();
 				clusters += v.getTotalClusterSize();
+				v.showSampleResults();
 			}
 		}
-		System.out.println("total cc found:" + cc);
-		System.out.println("total size of clusters:"+ clusters);
-		System.out.println("CC in Cluster on average:"+cc*1.0/clusters);
+		
+		System.out.println("---------------Clusters Result Over all test programs-------------------");
+		System.out.println("------------------------------------------------------------------------");
+		Utility.calClusterResults(clusters, cc, totalCC, passTestSize);
 	}
 	
 	private List<Integer> readVersion(String file)

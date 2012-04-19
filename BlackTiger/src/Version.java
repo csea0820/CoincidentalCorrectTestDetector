@@ -19,7 +19,6 @@ public class Version {
 
 	int versionID;
 	String program;
-	//final String testCaseResultDir = "./testCaseExecutedStmts/v"
 	
 	List<TestCase> passTestCases = null;
 	List<TestCase> failedTestCases = null;
@@ -29,22 +28,17 @@ public class Version {
 	int numberOfPredicates = 0;
 	int numberOfLine = 0;
 	
-	int coincidentalCorrectnessFound = 0;
-	int totalClusterSize = 0;
-	
-	final static String xp_path = "E:\\workspace_eclipse\\BlackTiger";
-	
-	int cnt = 0;
-	
-	int coincidnetCorrectnessCnt = 0;
-	
-	
-	public int getCoincidentalCorrectnessFound() {
-		return coincidentalCorrectnessFound;
+	int m_coincidentalCorrectnessTotalFound = 0;
+	int m_coincidnetCorrectnessTotalCnt = 0;
+	int m_totalChoosenSize = 0;
+	double m_firstNClustersPercentage = 0.1;
+		
+	public int getm_coincidentalCorrectnessTotalFound() {
+		return m_coincidentalCorrectnessTotalFound;
 	}
 
 	public int getTotalClusterSize() {
-		return totalClusterSize;
+		return m_totalChoosenSize;
 	}
 
 	public int getVersionID() {
@@ -79,36 +73,20 @@ public class Version {
 							"Number of line:"+numberOfLine+"\n"+
 							"Total test cases:" +(passTestCases.size()+failedTestCases.size())+"\n"+
 							"Failed test cases:"+failedTestCases.size()+"\n"+
-							"Coincidental Corret test cases:"+coincidnetCorrectnessCnt+"\n");
+							"Coincidental Corret test cases:"+m_coincidnetCorrectnessTotalCnt+"\n");
 	}
 	
 	public void go(String testCaseResultDir,String CCResultDir)
-	{
-//		int lastV = testCaseResultDir.lastIndexOf("v");
-//		versionID = Integer.parseInt(testCaseResultDir.substring(lastV+1));
-		
-//		System.out.println("program:"+program);
-//		System.out.println("version:"+versionID);
-//		
-//		System.out.println("Begining read testResult");
-		
+	{	
 		File file = new File(testCaseResultDir);
 		String[] files = file.list();
 		
 		for (int i = 0; i < files.length; i++)
 		{
 			readTestResult(file+"/"+files[i]);
-		}
-		
-		//System.out.println("Begining read CoincidentalCorrectness");
-		
-		readCoincidentalCorrectness(CCResultDir);
-
-		
+		}		
+		readCoincidentalCorrectness(CCResultDir);		
 		versionInfoAboutTestSet();
-		//generateArff(passTestCases);
-		//rankMethod();
-		//wekaSimpleKMeans();
 		clusterMethod();
 	}
 	
@@ -180,42 +158,25 @@ public class Version {
 			bufferWriter.close();
 			fileWriter.close();		
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
 	private void clusterMethod()
-	{
-//		calNumberOfLine(passTestCases);
-//		calNumberOfLine(failedTestCases);
-//		System.out.println("Total Line:"+numberOfLine);
-		
+	{		
 		int K = 10;
 		if (program.equals("tot_info"))K = 7;
 		else if (program.equals("schedule"))K = 17;
 		else K = 18;
-		
-		
-		System.out.println("Value of K:"+K);
+				
+//		System.out.println("Value of K:"+K);
 		KMeanCluster KMean = new KMeanCluster(passTestCases,K);
 		KMean.setFailedTestCases(failedTestCases);
 //		List<List<TestCase> > result = KMean.cluster();
 //		List<SumCluster> ret = getSumCluster(result);
 		List<SumCluster> ret = KMean.cluster();
-		evaluateSumCluster(ret);
-		suspiciousSample(ret);
-		//distanceSample(ret);
-		//nPerClusterSample(ret,(int)(passTestCases.size()*0.3));
-		//adaptiveSample(KMean.getCluster());
-		
-//		System.out.println("Passing Tests:"+passTestCases.size());
-		
-//		KMeanCluster KMean = new KMeanCluster(passTestCases,2);
-//		List<List<TestCase> > result = KMean.cluster();
-//		analysisCluster(result.get(0));
-//		analysisCluster(result.get(1));
-		//analysisCluster(result.get(2));
+//		evaluateSumCluster(ret);
+		suspiciousSample(ret,(int)(K*m_firstNClustersPercentage));
 	}
 	
 	private void evaluateSumCluster(List<SumCluster> ret)
@@ -241,31 +202,27 @@ public class Version {
 				minIndex = i;
 		}
 		
-		totalClusterSize += ret.get(minIndex).getSize();
-		coincidentalCorrectnessFound += ret.get(minIndex).getCcCount();
+		m_totalChoosenSize += ret.get(minIndex).getSize();
+		m_coincidentalCorrectnessTotalFound += ret.get(minIndex).getCcCount();
 	}
 	
-	private void suspiciousSample(List<SumCluster> ret)
+	private void suspiciousSample(List<SumCluster> ret,int n)
 	{
-//		int maxIndex = 0;
-//		float maxValue = ret.get(0).getSuspiciousDistance();
-//		
-//		for (int i = 1; i < ret.size(); i++)
-//		{
-//			if (ret.get(i).getSuspiciousDistance() > maxValue)
-//			{
-//				maxIndex = i;
-//				maxValue = ret.get(i).getSuspiciousDistance();
-//			}
-//		}
-//		
-//		totalClusterSize += ret.get(maxIndex).getSize();
-//		coincidentalCorrectnessFound += ret.get(maxIndex).getCcCount();
+		n = Math.max(1, n);
 		Collections.sort(ret);
-		totalClusterSize += ret.get(0).getSize();
-		coincidentalCorrectnessFound += ret.get(0).getCcCount();
-		totalClusterSize += ret.get(1).getSize();
-		coincidentalCorrectnessFound += ret.get(1).getCcCount();
+		n = Math.min(n, ret.size());
+		resetArguments();
+		for (int i = 0; i < n; i++)
+		{
+			m_totalChoosenSize += ret.get(i).getSize();
+			m_coincidentalCorrectnessTotalFound += ret.get(i).getCcCount();
+		}
+	}
+	
+	private void resetArguments()
+	{
+		m_totalChoosenSize = 0;
+		m_coincidentalCorrectnessTotalFound = 0;
 	}
 	
 	private void nPerClusterSample(List<SumCluster> ret,int N)
@@ -281,37 +238,14 @@ public class Version {
 			}
 		}
 		
-		totalClusterSize += totalSize;
-		coincidentalCorrectnessFound += cc;
-		
-		System.out.println("Choose Size:"+totalSize);
-		System.out.println("CC in Cluster:"+cc);
-		System.out.println("Percentage of CC in cluster:"+cc*1.0/totalSize);
-		System.out.println("False Negative:"+(coincidnetCorrectnessCnt-cc)*1.0/coincidnetCorrectnessCnt);
-		System.out.println("False Postive:"+(totalSize-cc)*1.0/(passTestCases.size()-coincidnetCorrectnessCnt));
-		System.out.println("\n");
+		m_totalChoosenSize = totalSize;
+		m_coincidentalCorrectnessTotalFound = cc;
 	}
 	
-//	private List<SumCluster> getSumCluster(List<List<TestCase> > result)
-//	{
-//		List<SumCluster> ret = new ArrayList<SumCluster>();
-//		
-//		for (List<TestCase> tcs:result)
-//		{
-//			int size = tcs.size();
-//			int cc = 0;
-//			for (TestCase tc:tcs)
-//				if (tc.isCoincidentCorretness())cc++;
-//			ret.add(new SumCluster(size,cc));
-//		}
-//		
-//		Collections.sort(ret);
-//		
-//		//for (SumCluster sc:ret)System.out.println(sc.getSize());
-//		
-//		return ret;
-//	}
-	
+	public void showSampleResults()
+	{
+		Utility.calClusterResults(m_totalChoosenSize, m_coincidentalCorrectnessTotalFound, m_coincidnetCorrectnessTotalCnt, passTestCases.size());
+	}
 	
 	private void adaptiveSample(List<List<TestCase> > result)
 	{
@@ -336,177 +270,6 @@ public class Version {
 			}
 			else totalSize++;
 		}
-		totalClusterSize += totalSize;
-		coincidentalCorrectnessFound += ccSize;
-		System.out.println("Found CC in cluster:"+ccSize);
-		System.out.println("Percentage of CC in cluster:"+ccSize*1.0/totalSize);
-		System.out.println("False Negative:"+(coincidnetCorrectnessCnt-ccSize)*1.0/coincidnetCorrectnessCnt);
-		System.out.println("False Postive:"+(totalSize-ccSize)*1.0/(passTestCases.size()-coincidnetCorrectnessCnt));
-		System.out.println("\n");
-	}
-	
-	
-	private void analysisCluster(List<TestCase> list)
-	{
-		int baseNumber =  list.size();
-		System.out.println("Cluster Size:"+baseNumber);
-		int cnt = 0;
-		for (int i = 0; i < baseNumber; i++)
-		{
-			if (list.get(i).isCoincidentCorretness())cnt++;
-		}
-		
-		//System.out.println(baseNumber);
-		System.out.println("Found CC in cluster:"+cnt);
-		System.out.println("False Negative:"+(coincidnetCorrectnessCnt-cnt)*1.0/coincidnetCorrectnessCnt);
-		System.out.println("False Postive:"+(baseNumber-cnt)*1.0/(passTestCases.size()-coincidnetCorrectnessCnt));
-		System.out.println("\n");
-	}
-	
-	private void rankMethod()
-	{
-		System.out.println("Begining rank testcase");
-		rankTestCase();
-		
-		for (TestCaseSimilarity tc:tcs)
-			System.out.println(tc.getName()+" "+tc.getSimilarity()+" "+tc.isCC());
-		
-		System.out.println("Analysis");
-		System.out.println("This test suite cointains "+ coincidnetCorrectnessCnt + " CC");
-		analysis(coincidnetCorrectnessCnt);
-		
-		analysis((int)(coincidnetCorrectnessCnt*1.5));
-		analysis(coincidnetCorrectnessCnt*4);
-		analysis(coincidnetCorrectnessCnt*6);
-	}
-	
-	
-	private void calSimilarity(TestCase tc)
-	{
-		int similarity = Integer.MAX_VALUE;
-		
-//		List<Stmt> passList = null;
-//		List<Stmt> failedList = null;
-		for (TestCase tt:failedTestCases)
-		{
-//			int i = 0,j = 0;
-//			int tempSimilarity = 0;
-//			passList = tc.getStmts();
-//			failedList = tt.getStmts();
-//			
-//			while (i < passList.size() && j < failedList.size())
-//			{
-//				int lineNumber0 = passList.get(i).getLineNumber();
-//				int iineNumber1 = failedList.get(j).getLineNumber();
-//				
-//				if (lineNumber0 == iineNumber1 && passList.get(i).isPredicate == true)
-//				{
-////					tempSimilarity += calDistance(passList.get(i).getTimes(),failedList.get(j).getTimes());
-//					tempSimilarity += calPredicatesSimilarity(passList.get(i).getBranchExecutionCount(),
-//							failedList.get(i).getBranchExecutionCount());
-//					i++;
-//					j++;
-//				}
-//				else if (lineNumber0 < iineNumber1)
-//					i++;
-//				else j++;
-//			}
-			int tempSimilarity = tt.calSimilarityOfTestCases(tc);
-			similarity = Math.min(similarity, Math.abs(tempSimilarity));
-			//similarity += tempSimilarity;
-		}
-		
-		TestCaseSimilarity tcsTmp = new TestCaseSimilarity(tc.getName(),similarity);
-		tcsTmp.setStmts(tc.getStmts());
-		tcsTmp.setCC(tc.isCoincidentCorretness());
-		tcs.add(tcsTmp);
-	}
-	
-//	private int calSimilarityOfTestCases(TestCase tt, TestCase tc) {
-//		List<Stmt> passList = null;
-//		List<Stmt> failedList = null;
-//
-//		int i = 0, j = 0;
-//		int tempSimilarity = 0;
-//		passList = tc.getStmts();
-//		failedList = tt.getStmts();
-//
-//		while (i < passList.size() && j < failedList.size()) {
-//			int lineNumber0 = passList.get(i).getLineNumber();
-//			int iineNumber1 = failedList.get(j).getLineNumber();
-//
-//			if (lineNumber0 == iineNumber1
-//					&& passList.get(i).isPredicate == true) {
-//				// tempSimilarity +=
-//				// calDistance(passList.get(i).getTimes(),failedList.get(j).getTimes());
-//				tempSimilarity += calPredicatesSimilarity(passList.get(i)
-//						.getBranchExecutionCount(), failedList.get(i)
-//						.getBranchExecutionCount());
-//				i++;
-//				j++;
-//			} else if (lineNumber0 < iineNumber1)
-//				i++;
-//			else
-//				j++;
-//		}
-//		
-//		return tempSimilarity;
-//	}
-	
-
-	
-	private void rankTestCase()
-	{
-		//System.out.println("Calulate Similarity");
-		for (TestCase tc:passTestCases)
-		{
-			calSimilarity(tc);
-		}
-		
-		Collections.sort(tcs);
-		
-//		for (TestCaseSimilarity tcsy:tcs)
-//			System.out.println(tcsy.getSimilarity());
-		
-	}
-	
-		
-	private int calDistance(int times1,int times2)
-	{
-		return euclideanDistanceBySquare(times1,times2);
-	}
-//	
-	private int euclideanDistanceBySquare(int a,int b)
-	{
-		return (a-b)*(a-b);
-	}
-//	
-//	private int absoluteDistance(int times1,int times2)
-//	{
-//		return Math.abs(times1-times2);
-//	}
-//	
-//	private int hamingDistance(int times1,int times2)
-//	{
-////		if (times1 == times2)return 1;
-////		else return 0;
-//		if ((times1 != 0 && times2 != 0) || (times2 == 0 && times1 == 0))return 1;
-//		else return 0;
-//	}
-	
-	private void analysis(int baseNumber)
-	{
-		baseNumber = Math.min(baseNumber, passTestCases.size());
-		int cnt = 0;
-		for (int i = 0; i < baseNumber; i++)
-		{
-			if (tcs.get(i).isCC())cnt++;
-		}
-		
-		System.out.println(baseNumber);
-		System.out.println("False Negative:"+(coincidnetCorrectnessCnt-cnt)*1.0/coincidnetCorrectnessCnt);
-		System.out.println("False Postive:"+(baseNumber-cnt)*1.0/(passTestCases.size()-coincidnetCorrectnessCnt));
-		System.out.println("\n");
 	}
 	
 	private void readTestResult(String file)
@@ -516,9 +279,6 @@ public class Version {
 		String str = null;
 		
 		TestCase tc = new TestCase();
-		
-		//System.out.println(++cnt);
-		//System.out.println("file name:"+file);
 		
 		try {
 			
@@ -598,7 +358,7 @@ public class Version {
 					if (passTestCases.get(i).getName().equals(str))
 					{
 						passTestCases.get(i).setCoincidentCorretness(true);
-						coincidnetCorrectnessCnt++;
+						m_coincidnetCorrectnessTotalCnt++;
 						break;
 					}
 				}
@@ -628,63 +388,16 @@ public class Version {
 				tc.showInfo();
 	}
 	
-	//n0 for pass test case;n1 for failed test case
-	public void compareTestCaseExecutionProfile(String n0,String n1)
-	{
-		TestCase tc0 = null;
-		for (TestCase tc:passTestCases)
-			if (tc.getName().equals(n0))
-			{
-				tc0 = tc;
-				break;
-			}
-		
-		TestCase tc1 = null;
-		for (TestCase tc:passTestCases)
-			if (tc.getName().equals(n1))
-			{
-				tc1 = tc;
-				break;
-			}
-		
-		int diff = 0;
-		for (int i = 0; i < tc0.getStmts().size(); i++)
-		{
-			if (tc0.getStmts().get(i).isPredicate)
-			{
-//				System.out.println(tc0.getStmts().get(i).getTimes()+" "+
-//						tc1.getStmts().get(i).getTimes());
-				diff += calDistance(tc0.getStmts().get(i).getTimes(),
-						tc1.getStmts().get(i).getTimes());
-			}
-		}
-		System.out.println("Difference:"+diff);
-	}
 	
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {	
-		Version v = new Version();
-		v.go(xp_path+args[0], xp_path+args[1]);
-//		v.requireTestCase("tst31");
-//		v.compareTestCaseExecutionProfile("tst31", "jk29");
-//		v.compareTestCaseExecutionProfile("tst31", "jk29");
-//		v.compareTestCaseExecutionProfile("tst31", "uslin.1283");
-//		v.compareTestCaseExecutionProfile("tst31", "uslin.685");
-//		v.compareTestCaseExecutionProfile("tst31", "newtst383.tst");
-		
-//		v.compareTestCaseExecutionProfile("uslin.378", "uslin.301");
-//		v.compareTestCaseExecutionProfile("jk29", "ts696");
+	public static void main(String[] args) {
 		
 	}
 
 	private void calNumberOfLine(List<TestCase> list)
 	{
-//		for (TestCase tc: list)
-//		{
-//			numberOfLine = Math.max(numberOfLine, tc.getStmts().size());
-//		}
 		numberOfLine =  list.get(0).getStmts().size();
 	}
 	
@@ -715,6 +428,37 @@ public class Version {
 
 	public void setProgram(String program) {
 		this.program = program;
+	}
+
+	public int getM_coincidentalCorrectnessTotalFound() {
+		return m_coincidentalCorrectnessTotalFound;
+	}
+
+	public void setM_coincidentalCorrectnessTotalFound(
+			int m_coincidentalCorrectnessTotalFound) {
+		this.m_coincidentalCorrectnessTotalFound = m_coincidentalCorrectnessTotalFound;
+	}
+
+	public int getM_coincidnetCorrectnessTotalCnt() {
+		return m_coincidnetCorrectnessTotalCnt;
+	}
+
+	public void setM_coincidnetCorrectnessTotalCnt(
+			int m_coincidnetCorrectnessTotalCnt) {
+		this.m_coincidnetCorrectnessTotalCnt = m_coincidnetCorrectnessTotalCnt;
+	}
+
+	public int getM_totalChoosenSize() {
+		return m_totalChoosenSize;
+	}
+
+	public void setM_totalChoosenSize(int m_totalChoosenSize) {
+		this.m_totalChoosenSize = m_totalChoosenSize;
+	}
+	
+	public int getPassTestSize()
+	{
+		return passTestCases.size();
 	}
 
 }

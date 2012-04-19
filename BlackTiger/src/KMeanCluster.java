@@ -117,9 +117,6 @@ public class KMeanCluster {
 			for (int i = 0; i < K; i++)
 				clusters[i].updateCentroid();
 			
-//			System.out.println("Runing KMeanCluster Process:"+cntIter++);
-//			System.out.println("Cluster 0 Size:"+clusters[0].size());
-//			System.out.println("Cluster 1 Size:"+clusters[1].size());
 		}
 		
 		
