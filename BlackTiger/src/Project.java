@@ -21,6 +21,8 @@ public class Project {
 		{
 			List<Integer> versions = readVersion(xp_path+"/"+prog+"/versions.txt");		
 			
+			int cct = 0, clustert = 0, totalCCT = 0, passTestSizet = 0;
+			
 			for (int id: versions)
 			{
 				Version v = new Version();
@@ -34,8 +36,17 @@ public class Project {
 				passTestSize += v.getPassTestSize();
 				cc += v.getm_coincidentalCorrectnessTotalFound();
 				clusters += v.getTotalClusterSize();
-				v.showSampleResults();
+				//v.showSampleResults();
+				
+				totalCCT += v.getM_coincidnetCorrectnessTotalCnt();
+				passTestSizet += v.getPassTestSize();
+				cct += v.getm_coincidentalCorrectnessTotalFound();
+				clustert += v.getTotalClusterSize();
 			}
+		
+			System.out.println("---------------Clusters Result Over programs "+prog+"-------------------");
+			System.out.println("------------------------------------------------------------------------");
+			Utility.calClusterResults(clustert, cct, totalCCT, passTestSizet);
 		}
 		
 		System.out.println("---------------Clusters Result Over all test programs-------------------");

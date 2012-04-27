@@ -32,6 +32,7 @@ public class Version {
 	int m_coincidnetCorrectnessTotalCnt = 0;
 	int m_totalChoosenSize = 0;
 	double m_firstNClustersPercentage = 0.1;
+	double m_suspiciousRange = 3;
 		
 	public int getm_coincidentalCorrectnessTotalFound() {
 		return m_coincidentalCorrectnessTotalFound;
@@ -67,10 +68,10 @@ public class Version {
 	{
 		System.out.println("--------------------------------------");
 		calNumberOfLine(passTestCases);
-		calNumberOfLine(failedTestCases);
+		//calNumberOfLine(failedTestCases);
 		System.out.println( "\nProgram name:" + program+"\n"+
 							"Version:" + versionID +"\n"+
-							"Number of line:"+numberOfLine+"\n"+
+							"Number of Predicates:"+numberOfLine+"\n"+
 							"Total test cases:" +(passTestCases.size()+failedTestCases.size())+"\n"+
 							"Failed test cases:"+failedTestCases.size()+"\n"+
 							"Coincidental Corret test cases:"+m_coincidnetCorrectnessTotalCnt+"\n");
@@ -165,7 +166,7 @@ public class Version {
 	private void clusterMethod()
 	{		
 		int K = 10;
-		if (program.equals("tot_info"))K = 7;
+		if (program.equals("tot_info"))K = 10;
 		else if (program.equals("schedule"))K = 17;
 		else K = 18;
 				
@@ -174,13 +175,15 @@ public class Version {
 		KMean.setFailedTestCases(failedTestCases);
 //		List<List<TestCase> > result = KMean.cluster();
 //		List<SumCluster> ret = getSumCluster(result);
-		List<SumCluster> ret = KMean.cluster();
-//		evaluateSumCluster(ret);
-		suspiciousSample(ret,(int)(K*m_firstNClustersPercentage));
+		List<SumCluster> ret = KMean.cluster();		
+//		suspiciousSample(ret,(int)(Math.ceil(K*m_firstNClustersPercentage)));
+		evaluateSumCluster(ret);
+		suspiciousSample(ret);
 	}
 	
 	private void evaluateSumCluster(List<SumCluster> ret)
 	{
+		
 		for (SumCluster sc:ret)
 		{
 			System.out.println("Cluster Size:"+sc.getSize());
@@ -209,13 +212,37 @@ public class Version {
 	private void suspiciousSample(List<SumCluster> ret,int n)
 	{
 		n = Math.max(1, n);
-		Collections.sort(ret);
 		n = Math.min(n, ret.size());
+
+		Collections.sort(ret);
+		//evaluateSumCluster(ret);
 		resetArguments();
 		for (int i = 0; i < n; i++)
 		{
 			m_totalChoosenSize += ret.get(i).getSize();
 			m_coincidentalCorrectnessTotalFound += ret.get(i).getCcCount();
+		}
+	}
+	
+	private void suspiciousSample(List<SumCluster> ret)
+	{
+		resetArguments();
+		Collections.sort(ret);
+		m_totalChoosenSize += ret.get(0).getSize();
+		m_coincidentalCorrectnessTotalFound += ret.get(0).getCcCount();
+		float susp = ret.get(0).getSuspiciousDistance();
+		m_suspiciousRange = susp*0.03;
+		for (int i =  1; i < ret.size(); i++)
+		{
+			if (Math.abs(ret.get(ret.size()*2/3).getSuspiciousDistance() - susp) < m_suspiciousRange)
+				continue;
+			
+			float s = ret.get(i).getSuspiciousDistance();
+			if (Math.abs(susp-s) < m_suspiciousRange)
+			{
+				m_totalChoosenSize += ret.get(i).getSize();
+				m_coincidentalCorrectnessTotalFound += ret.get(i).getCcCount();
+			}
 		}
 	}
 	
