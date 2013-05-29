@@ -1,3 +1,6 @@
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+
 public class Utility {
 
 	public static void calClusterResults(int m_totalChoosenSize,
@@ -20,6 +23,22 @@ public class Utility {
 						* 1.0
 						/ (passTestSize - m_coincidnetCorrectnessTotalCnt));
 		System.out.println("--------------------------------------");
+
+	}
+	
+	public static void writeToFile(String file,String content)
+	{
+		PrintWriter pw = null;
+		try {
+			pw = new PrintWriter(file);
+			pw.write(content);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		finally
+		{
+			pw.close();
+		}
 
 	}
 

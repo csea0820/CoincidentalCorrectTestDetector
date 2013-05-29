@@ -75,7 +75,7 @@ public class KMeanCluster {
 				int minSimi = Integer.MAX_VALUE;
 				int index = -1;
 
-				// ¶ÔÓÚµãI£¬¼ÆËã×î½ü´Ø
+				// ï¿½ï¿½ï¿½Úµï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				for (int j = 0; j < K; j++) {
 					int sim = clusters[j].calSimilarity(testcases.get(i));
 
@@ -85,7 +85,7 @@ public class KMeanCluster {
 					}
 				}
 
-				// Èç¹û×î½ü´ØÓëÔ­ÏÈ´Ø²»Ò»Ñù£¬ÔòÖØÐÂ·ÖÅäµãiµ½ÐÂ´Ø
+				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô­ï¿½È´Ø²ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½Â´ï¿½
 				if (index != -1 && ownerCluster[i] != index) {
 					change = true;
 					ownerCluster[i] = index;
@@ -98,7 +98,7 @@ public class KMeanCluster {
 				}
 			}
 
-			// ¸üÐÂ´ØÖÊÐÄ
+			// ï¿½ï¿½ï¿½Â´ï¿½ï¿½ï¿½ï¿½ï¿½
 			for (int i = 0; i < K; i++)
 				clusters[i].updateCentroid();
 
@@ -117,7 +117,7 @@ public class KMeanCluster {
 			}
 			ret.add(new SumCluster(tcs.size(), cc, clusters[i].calVariance(),
 					clusters[i].calDistanceFromFailedTestCases(), clusters[i]
-							.calSuspiciousDistance()));
+							.calSuspiciousDistance(),tcs));
 
 			// int sse = 0;
 			// for (TestCase tc:clusters[i].getClusterElements())

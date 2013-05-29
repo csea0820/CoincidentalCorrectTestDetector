@@ -129,19 +129,22 @@ public class Version {
 		buffer.append("@relation "+program+versionID+"\n");
 		
 		int attrCnt = getAttrSize(tcs.get(0));
+		
+		buffer.append("@attribute ID integer\n");
 		for (int i = 0; i < attrCnt; i++)
 		buffer.append("@attribute A"+i+" real\n");
 		
 		buffer.append("@data\n");
 		for (int i = 0; i < tcs.size(); i++)
 		{
+			buffer.append(tcs.get(i).getName()+",");
 			for (int j = 0; j < tcs.get(i).getStmts().size(); j++)
 			{
 				for (int k = 0; k < tcs.get(i).getStmts().get(j).getBranchExecutionCount().size();k++)
 				{
-					if (j == 0 && k ==0)
-						buffer.append(tcs.get(i).getStmts().get(j).getBranchExecutionCount().get(k));
-					else buffer.append(","+tcs.get(i).getStmts().get(j).getBranchExecutionCount().get(k));
+//					if (j == 0 && k == 0)
+//						buffer.append(tcs.get(i).getStmts().get(j).getBranchExecutionCount().get(k));
+					buffer.append(","+tcs.get(i).getStmts().get(j).getBranchExecutionCount().get(k));
 				}
 			}
 			buffer.append("\n");
@@ -177,7 +180,7 @@ public class Version {
 //		List<SumCluster> ret = getSumCluster(result);
 		List<SumCluster> ret = KMean.cluster();		
 //		suspiciousSample(ret,(int)(Math.ceil(K*m_firstNClustersPercentage)));
-		evaluateSumCluster(ret);
+//		evaluateSumCluster(ret);
 		suspiciousSample(ret);
 	}
 	
@@ -232,6 +235,9 @@ public class Version {
 		m_coincidentalCorrectnessTotalFound += ret.get(0).getCcCount();
 		float susp = ret.get(0).getSuspiciousDistance();
 		m_suspiciousRange = susp*0.03;
+		List<Integer> list = new ArrayList<Integer>();
+		for (TestCase tc : ret.get(0).list)
+			list.add(Integer.parseInt(tc.getName()));
 		for (int i =  1; i < ret.size(); i++)
 		{
 			if (Math.abs(ret.get(ret.size()*2/3).getSuspiciousDistance() - susp) < m_suspiciousRange)
@@ -242,8 +248,12 @@ public class Version {
 			{
 				m_totalChoosenSize += ret.get(i).getSize();
 				m_coincidentalCorrectnessTotalFound += ret.get(i).getCcCount();
+				for (TestCase tc : ret.get(i).list)
+					list.add(Integer.parseInt(tc.getName()));
 			}
 		}
+		
+		writeCcToFile(list);
 	}
 	
 	private void resetArguments()
@@ -297,6 +307,17 @@ public class Version {
 			}
 			else totalSize++;
 		}
+	}
+	
+	private void writeCcToFile(List<Integer> list)
+	{
+		StringBuilder sb = new StringBuilder();
+		for (Integer id: list)
+		{
+			sb.append(id).append("\n");
+		}
+		Utility.writeToFile("/Users/csea/Documents/Experiment/Siemens/"
+		+program+"/coincidentalCorrectness/coincidentalCorrectness."+versionID, sb.toString());
 	}
 	
 	private void readTestResult(String file)

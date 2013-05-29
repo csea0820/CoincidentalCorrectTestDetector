@@ -20,15 +20,19 @@ public class FaultScriptGenerate extends ScriptGenerate{
 	{
 		buffer = new StringBuffer();
 		
-		buffer.append("cd ./testCaseExecutedStmts\n");
+		createDIR("testCaseExecutedPreds");
+		buffer.append("cd ./testCaseExecutedPreds\n");
 		createDIR("v"+versionID);
 		buffer.append("cd ..\n");
 		
+//		buffer.append("cp ./versions.alt/versions.orig/v"+versionID+"/"+program+".c .\n");
+		
+		buffer.append("gcc -lm ./source.alt/source.orig/"+program+".c -o a.out\n");
 		buffer.append("gcc -fprofile-arcs -ftest-coverage -lm ./versions.alt/versions.orig/v"+versionID+"/"+program+".c -o b.out\n");
 		
 		openBufferedReader("."+TEST_PLAN_FILE);
 		String testcase = readTestCase();
-		int count = 0;
+		int count = 1;
 		while (testcase != null)
 		{
 			
@@ -36,18 +40,21 @@ public class FaultScriptGenerate extends ScriptGenerate{
 			buffer.append("./b.out " + testcase + " > tmp2\n");
 			
 			buffer.append("result=1\n");
-			buffer.append("gcov -bc ./versions.alt/versions.orig/v"+versionID+"/"+program+".c > /dev/null\n");
+			buffer.append("gcov -bc ./"+program+".c > /dev/null\n");
 			buffer.append("if ! diff tmp1 tmp2\n");
 			buffer.append("then\n");
 			buffer.append("result=0\n");
 			buffer.append("fi\n");
-			buffer.append("java Parser "+program+".c.gcov "+count + " $result "+ versionID + "\n");
+			buffer.append("java -jar Parser.jar "+program+".c.gcov "+count + " $result "+ versionID + "\n");
 			buffer.append("rm "+program+".gcda\n");
-			buffer.append("mv *.res ./testCaseExecutedStmts/v"+versionID+"\n\n\n");
+			buffer.append("mv *.res ./testCaseExecutedPreds/v"+versionID+"\n\n\n");
+//			buffer.append("echo "+count+"\n");
 			count++;
 		
 			testcase = readTestCase();
 		}
+		
+//		buffer.append("rm "+program+".c");
 		
 		writeBufferToFile(EXECUTION_PROFILE);
 		closeBufferedReader();

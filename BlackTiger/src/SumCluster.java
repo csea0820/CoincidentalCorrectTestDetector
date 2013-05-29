@@ -1,5 +1,9 @@
+import java.util.List;
+
 
 public class SumCluster implements Comparable<SumCluster>{
+	
+	List<TestCase> list;
 	
 	float distanceFromFailedTestCases;
 	float suspiciousDistance;
@@ -8,8 +12,9 @@ public class SumCluster implements Comparable<SumCluster>{
 	int size;
 	int ccCount;
 	
-	SumCluster(int size,int ccCount,float variance,float distance,float sd)
+	SumCluster(int size,int ccCount,float variance,float distance,float sd,List<TestCase> list)
 	{
+		this.list = list;
 		this.size = size;
 		this.ccCount = ccCount;
 		this.variance = variance;

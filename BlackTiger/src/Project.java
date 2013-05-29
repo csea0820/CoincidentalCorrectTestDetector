@@ -36,7 +36,7 @@ public class Project {
 				passTestSize += v.getPassTestSize();
 				cc += v.getm_coincidentalCorrectnessTotalFound();
 				clusters += v.getTotalClusterSize();
-				//v.showSampleResults();
+				v.showSampleResults();
 				
 				totalCCT += v.getM_coincidnetCorrectnessTotalCnt();
 				passTestSizet += v.getPassTestSize();
@@ -44,9 +44,9 @@ public class Project {
 				clustert += v.getTotalClusterSize();
 			}
 		
-			System.out.println("---------------Clusters Result Over programs "+prog+"-------------------");
-			System.out.println("------------------------------------------------------------------------");
-			Utility.calClusterResults(clustert, cct, totalCCT, passTestSizet);
+//			System.out.println("---------------Clusters Result Over programs "+prog+"-------------------");
+//			System.out.println("------------------------------------------------------------------------");
+//			Utility.calClusterResults(clustert, cct, totalCCT, passTestSizet);
 		}
 		
 		System.out.println("---------------Clusters Result Over all test programs-------------------");

@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 
@@ -26,8 +27,8 @@ public class Parser {
 		if ( !tc.isResult() )
 			totalFailCnt++;
 		
+		FileInputStream fr = null;
 		BufferedReader br = null;
-		FileReader fr = null;
 		String str;
 		
 		Stmt lastStmt = null;
@@ -35,9 +36,8 @@ public class Parser {
 		boolean lastStmtIsBranch = false;
 		
 		try {
-			fr = new FileReader("./"+gcovFile);
-			
-			br = new BufferedReader(fr);
+			fr = new FileInputStream(gcovFile);
+			br = new BufferedReader(new InputStreamReader(fr,"utf8"));
 			
 			str = br.readLine();
 			
@@ -62,8 +62,7 @@ public class Parser {
 //					for (String s:values)
 //						System.out.print(s+" ");
 //					System.out.println("\n");
-					
-					if (values[2].equals("taken"))
+					if (values[2].equals("被执行"))
 					{
 						branchProfile.add(Integer.parseInt(values[3]));
 					}
@@ -109,7 +108,7 @@ public class Parser {
 		}finally
 		{
 			//tc.showInfo();
-			tc.writeToFile(id);
+			tc.writeToFile(testCase);
 			try {
 				fr.close();
 				br.close();
@@ -122,6 +121,7 @@ public class Parser {
 		return tc;
 	}
 	
+	
 	public int getFailedTestCases()
 	{
 		return totalFailCnt;
@@ -131,7 +131,8 @@ public class Parser {
 	{
 		Parser parser = new Parser();
 		
-		parser.parse(args[0], args[1], Integer.parseInt(args[2]),Integer.parseInt(args[3]));
+		parser.parse(args[0], args[1], Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+		//parser.parse("/Users/csea/Documents/Experiment/Siemens/print_tokens/print_tokens.c.gcov", "1", 1,1);
 		//System.out.println("Failed test cases:"+parser.totalFailCnt);
 	}
 

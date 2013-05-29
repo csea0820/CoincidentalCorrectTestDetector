@@ -21,7 +21,7 @@ public class CoincidentalCorrectScriptGen extends ScriptGenerate{
 		buffer.append("cd ..\n");
 		buffer.append("gcc ./versions.alt/versions.orig/v"+versionID+"/" + program + ".c -o b.out -lm\n");
 		
-		int count = 0;
+		int count = 1;
 		openBufferedReader("."+ScriptGenerate.TEST_PLAN_FILE);	
 		String str = readTestCase();
 		buffer.append("echo ---Begin executing tests---\n");
