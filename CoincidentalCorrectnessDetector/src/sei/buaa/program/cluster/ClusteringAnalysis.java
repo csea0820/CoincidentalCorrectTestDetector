@@ -57,7 +57,13 @@ public class ClusteringAnalysis {
 			skm.setPreserveInstancesOrder(true);
 			
 			//begin to cluster
+			try{
 			skm.buildClusterer(insts);
+			}catch (IllegalArgumentException e)
+			{
+				System.err.println("m_clusterNumber:"+m_clusterNumber);
+				System.err.println("File "+arffFile+" can't normalize array. Sum is zero.");
+			}
 			
 			int[] cid = skm.getAssignments();
 			for (int i = 0; i < testCaseIds.size(); i++)
