@@ -40,7 +40,8 @@ public class SiemensAnalyzer {
 		
 		for (String path : programPaths)
 		{
-			System.out.println("analyzing program " + StringUtility.getBaseName(path));
+			String programName = StringUtility.getBaseName(path);
+			System.out.println("analyzing program " + programName);
 			ProjectAnalyzer pa = new ProjectAnalyzer(this,path,false,false);
 			pa.analyze();	
 			totalVersions += pa.getTotalVersions();
@@ -49,6 +50,9 @@ public class SiemensAnalyzer {
 			nonFaultVersions += pa.getNonFaultVersions();
 			analyzeVersions += pa.getAnalyzeVersions();
 			sb.append(pa.getDiagnosisContent());
+			
+			FileUtility.writeContentToFile(pa.getTscoreReductionInfo().toString(), "/Users/csea/Documents/Experiment/Siemens/tscoreReduction/"+programName+".csv");
+			
 			System.gc();
 		}
 		sb.append("Total Versions:" + totalVersions).append("\n");

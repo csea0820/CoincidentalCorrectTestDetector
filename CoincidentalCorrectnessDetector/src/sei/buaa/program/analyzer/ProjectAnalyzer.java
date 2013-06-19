@@ -31,8 +31,9 @@ public class ProjectAnalyzer {
 	private StringBuilder diagnosisContent = new StringBuilder(10000);
 
 	private StringBuilder expenseSummary = null;
-	private double expenseEfforts[] = new double[12];
 
+	private StringBuilder tscoreReductionInfo = new StringBuilder();
+	
 	SiemensAnalyzer sa;
 
 	public ProjectAnalyzer(SiemensAnalyzer sa, String programDir,
@@ -59,7 +60,8 @@ public class ProjectAnalyzer {
 	public void analyze() {
 		versionsOfIndividualProgramsCnt = 0;
 		totalTestsCnt = 0;
-		Arrays.fill(expenseEfforts, 0);
+		tscoreReductionInfo.append(programName).append(",RELABEL").append(",DISCARD")
+		.append(",IDEAL_REALBEL").append(",IDEAL_DISCARD").append("\n");	
 		for (int vid : versions) {
 			Parser parser = new Parser();
 			Version v = new Version();
@@ -108,8 +110,6 @@ public class ProjectAnalyzer {
 
 			analyzeVersion(v,tests,ideal_CCTests);	
 		}
-
-		addExpenseSummary(programName);
 
 		System.out.println("Program_Name:" + programName + ",analyzeVersions:"
 				+ versionsOfIndividualProgramsCnt + ",totalTests:"
@@ -177,17 +177,6 @@ public class ProjectAnalyzer {
 
 	}
 
-	private void addExpenseSummary(String subject) {
-		expenseSummary.append(subject).append(",");
-		for (double v : expenseEfforts) {
-			expenseSummary.append(
-					String.format("%5.0f", v * 100 / analyzeVersionsCnt))
-					.append("%,");
-		}
-		expenseSummary.replace(expenseSummary.length() - 1,
-				expenseSummary.length(), "\n");
-	}
-
 	public void analyzeVersion(Version v,List<TestCase> tests,List<TestCase> ideal_CCTests) {
 
 		if (v.getTotalFailedCount() == 0) {
@@ -197,6 +186,8 @@ public class ProjectAnalyzer {
 			return;
 		}
 
+		tscoreReductionInfo.append("v").append(v.getVersionId());
+		
 		analyzeVersionsCnt++;
 		versionsOfIndividualProgramsCnt++;
 		totalTestsCnt = v.getTotalFailedCount() + v.getTotalPassedCount();
@@ -205,16 +196,20 @@ public class ProjectAnalyzer {
 						+ v.getVersionId()).append("\n");
 		diagnosisContent.append(v.getVersionInfo() + "\n");
 		
-		calcSups(v,new TarantulaSusp(),tests,Constant.NO_ACTION,sa.getTarantulaExp());
-		calcSups(v,new TarantulaSusp(),tests,Constant.RELABLE,sa.getTarantulaRelabelExp());
-		calcSups(v,new TarantulaSusp(),tests,Constant.DISCARD,sa.getTarantulaDiscardExp());
+		double t0 = calcSups(v,new TarantulaSusp(),tests,Constant.NO_ACTION,sa.getTarantulaExp());
+		double t1 = calcSups(v,new TarantulaSusp(),tests,Constant.RELABLE,sa.getTarantulaRelabelExp());
+		double t2 = calcSups(v,new TarantulaSusp(),tests,Constant.DISCARD,sa.getTarantulaDiscardExp());
 		
-		calcSups(v,new TarantulaSusp(),tests,Constant.RELABLE,sa.getTarantulaRelabelExp_ideal());
-		calcSups(v,new TarantulaSusp(),tests,Constant.DISCARD,sa.getTarantulaDiscardExp_ideal());
+		double t3 = calcSups(v,new TarantulaSusp(),tests,Constant.RELABLE,sa.getTarantulaRelabelExp_ideal());
+		double t4 = calcSups(v,new TarantulaSusp(),tests,Constant.DISCARD,sa.getTarantulaDiscardExp_ideal());
 
+		tscoreReductionInfo.append(",").append(t0-t1).append(",").append(t0-t2).append(",").append(t0-t3)
+		.append(",").append(t0-t4).append("\n");
+		
+		
 	}
 	
-	private void calcSups(Version v,ISuspsCalculator technique, List<TestCase> tests,int strategy,Expensive exp)
+	private double calcSups(Version v,ISuspsCalculator technique, List<TestCase> tests,int strategy,Expensive exp)
 	{
 		
 		List<AbstractSuspiciousness> suspList = new ArrayList<AbstractSuspiciousness>();
@@ -222,10 +217,10 @@ public class ProjectAnalyzer {
 		for (StatementSum eSum : map.values()) {
 			addSuspToList(suspList, technique, eSum);
 		}
-		rank(v, suspList, ISuspsCalculator.class.getName(),exp, map);
+		return rank(v, suspList, ISuspsCalculator.class.getName(),exp, map);
 	}
 
-	private int rank(Version v, List<AbstractSuspiciousness> susp, String fl,
+	private double rank(Version v, List<AbstractSuspiciousness> susp, String fl,
 			Expensive exp, Map<Integer, StatementSum> map) {
 		Collections.sort(susp);
 
@@ -240,7 +235,7 @@ public class ProjectAnalyzer {
 					.append("\nMostSuspStatement:" + sum.getLineNumber())
 					.append("\n").append(sum).append("\n\n");
 
-		return v.getExamineEffort();
+		return v.getExpensive();
 	}
 
 	public void getFaultLocation(String faultFile) {
@@ -339,6 +334,10 @@ public class ProjectAnalyzer {
 
 	public StringBuilder getDiagnosisContent() {
 		return diagnosisContent;
+	}
+
+	public StringBuilder getTscoreReductionInfo() {
+		return tscoreReductionInfo;
 	}
 
 }
