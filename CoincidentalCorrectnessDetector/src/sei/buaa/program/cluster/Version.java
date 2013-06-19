@@ -44,7 +44,7 @@ public class Version {
 		coincidentCorrectIDS = new HashSet<Integer>();
 	}
 	
-	
+	//使用聚类算法进行聚类，通过采样算法选择聚类产生的簇作为结果并返回。同时计算false positive及false negative。
 	public Set<Integer> analyzeCoincidentalCorrectness()
 	{
 		readTestCaseResult(programDIR+"/outputs_predicate/v"+versionID);
@@ -149,6 +149,11 @@ public class Version {
 		}
 		
 	}	
+	public Set<Integer> getCoincidentCorrectIDS() {
+		if (coincidentCorrectIDS == null)
+			readCoincidentalCorrectTests(programDIR+"/coincidentalCorrectness/coincidentalCorrectness_v"+versionID);
+		return coincidentCorrectIDS;
+	}
 		
 	
 	public static void main(String[] args)

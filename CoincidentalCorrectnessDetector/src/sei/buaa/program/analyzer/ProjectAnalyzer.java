@@ -89,17 +89,24 @@ public class ProjectAnalyzer {
 			List<TestCase> tests = parser.parser(programDir + "/"
 					+ Constant.OUT_PUT_DIR + "/v" + vid);
 
+			List<TestCase> ideal_CCTests = new ArrayList<TestCase>();
+			for (TestCase t: tests)
+			{
+				ideal_CCTests.add((TestCase) t.clone());
+			}
+			
 			sei.buaa.program.cluster.Version cv = new sei.buaa.program.cluster.Version(
 					programDir, vid);
 			Set<Integer> cc = cv.analyzeCoincidentalCorrectness();
 
 			addCoincidentalCorrectInfo(tests, cc);
+			addCoincidentalCorrectInfo(ideal_CCTests, cc);
 
 			v.setTotalFailedCount(parser.getTotalFailedTestCaseCnt());
 			v.setTotalPassedCount(parser.getTotalPassedTestCaseCnt());
 			v.setTotalExecutableCode(parser.getTotalExecutableCodeCnt());
 
-			analyzeVersion(v,tests);
+			analyzeVersion(v,tests,ideal_CCTests);	
 		}
 
 		addExpenseSummary(programName);
@@ -181,7 +188,7 @@ public class ProjectAnalyzer {
 				expenseSummary.length(), "\n");
 	}
 
-	public void analyzeVersion(Version v,List<TestCase> tests) {
+	public void analyzeVersion(Version v,List<TestCase> tests,List<TestCase> ideal_CCTests) {
 
 		if (v.getTotalFailedCount() == 0) {
 			diagnosisContent.append(
@@ -201,6 +208,9 @@ public class ProjectAnalyzer {
 		calcSups(v,new TarantulaSusp(),tests,Constant.NO_ACTION,sa.getTarantulaExp());
 		calcSups(v,new TarantulaSusp(),tests,Constant.RELABLE,sa.getTarantulaRelabelExp());
 		calcSups(v,new TarantulaSusp(),tests,Constant.DISCARD,sa.getTarantulaDiscardExp());
+		
+		calcSups(v,new TarantulaSusp(),tests,Constant.RELABLE,sa.getTarantulaRelabelExp_ideal());
+		calcSups(v,new TarantulaSusp(),tests,Constant.DISCARD,sa.getTarantulaDiscardExp_ideal());
 
 	}
 	

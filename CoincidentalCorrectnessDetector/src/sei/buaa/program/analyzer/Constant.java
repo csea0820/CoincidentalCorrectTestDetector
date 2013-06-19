@@ -24,9 +24,10 @@ public class Constant {
 	public static final String FAULTS_LIST = "/faults.txt";
 	
 	public static final String TARANTULA = "Tarantula";
-	public static final String RELABEL_TARANTULA = "WTarantula";
-	public static final String DISCARD_TARANTULA = "LTarantula";
-
+	public static final String RELABEL_TARANTULA = "Tarantula_RELABEL";
+	public static final String DISCARD_TARANTULA = "Tarantula_DISCARD";
+	public static final String IDEAL_RELABEL_TARANTULA = "Tarantula_RELABEL_IDEAL";
+	public static final String IDEAL_DISCARD_TARANTULA = "Tarantula_DISCARD_IDEAL";
 	
 
 

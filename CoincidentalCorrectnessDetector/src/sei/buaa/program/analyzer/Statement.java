@@ -1,7 +1,7 @@
 package sei.buaa.program.analyzer;
 
 
-public class Statement {
+public class Statement implements Cloneable{
 	
 	private int lineNumber;
 	private int count;
@@ -40,5 +40,10 @@ public class Statement {
 
 	public void setBlock(boolean block) {
 		this.block = block;
-	}	
+	}
+	
+	public Object clone() throws CloneNotSupportedException{
+		return super.clone();
+		
+	}
 }

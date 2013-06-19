@@ -14,9 +14,15 @@ public class SiemensAnalyzer {
 	Expensive tarantulaExp = new Expensive(Constant.TARANTULA);
 	Expensive tarantulaRelabelExp = new Expensive(Constant.RELABEL_TARANTULA);
 	Expensive tarantulaDiscardExp = new Expensive(Constant.DISCARD_TARANTULA);
+	
+	Expensive tarantulaRelabelExp_ideal = new Expensive(Constant.IDEAL_RELABEL_TARANTULA);
+	Expensive tarantulaDiscardExp_ideal = new Expensive(Constant.IDEAL_DISCARD_TARANTULA);
+	
 	Expensive jaccardExp = new Expensive(Constant.JACCARD);
 	Expensive ochiaiExp = new Expensive(Constant.OCHIAI);
 	Expensive sbiExp = new Expensive(Constant.SBI);
+	
+	
 
 
 	
@@ -58,7 +64,9 @@ public class SiemensAnalyzer {
 		sb.append(String.format("%-10s","Interval")).append("\t")
 		.append(String.format("%-10s", "Tarantula")).append("\t")
 		.append(String.format("%-10s", "Tarantula_Relabel")).append("\t")	
-		.append(String.format("%-10s", "Tarantula_Discard")).append("\n");	
+		.append(String.format("%-10s", "Tarantula_Discard")).append("\t")
+		.append(String.format("%-10s", "Tarantula_Relabel_ideal")).append("\t")	
+		.append(String.format("%-10s", "Tarantula_Discard_ideal")).append("\n");	
 
 		int a = 1;
 		int interval = 5;
@@ -67,7 +75,9 @@ public class SiemensAnalyzer {
 			sb.append(String.format("%-10s",((a-1)*interval+"-"+a*interval))).append("\t");
 			sb.append(String.format("%-10d",tarantulaExp.getIntervalNumber(a*0.01*interval))).append("\t")
 			  .append(String.format("%-10d",tarantulaRelabelExp.getIntervalNumber(a*0.01*interval))).append("\t")
-			  .append(String.format("%-10d",tarantulaDiscardExp.getIntervalNumber(a*0.01*interval))).append("\n");
+			  .append(String.format("%-10d",tarantulaDiscardExp.getIntervalNumber(a*0.01*interval))).append("\t")
+			  .append(String.format("%-10d",tarantulaRelabelExp_ideal.getIntervalNumber(a*0.01*interval))).append("\t")
+			  .append(String.format("%-10d",tarantulaDiscardExp_ideal.getIntervalNumber(a*0.01*interval))).append("\n");
 
 			a += 1;
 		}
@@ -128,6 +138,14 @@ public class SiemensAnalyzer {
 
 	public Expensive getTarantulaDiscardExp() {
 		return tarantulaDiscardExp;
+	}
+
+	public Expensive getTarantulaRelabelExp_ideal() {
+		return tarantulaRelabelExp_ideal;
+	}
+
+	public Expensive getTarantulaDiscardExp_ideal() {
+		return tarantulaDiscardExp_ideal;
 	}
 
 }
