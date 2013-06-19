@@ -102,7 +102,7 @@ public class ProjectAnalyzer {
 			Set<Integer> cc = cv.analyzeCoincidentalCorrectness();
 
 			addCoincidentalCorrectInfo(tests, cc);
-			addCoincidentalCorrectInfo(ideal_CCTests, cc);
+			addCoincidentalCorrectInfo(ideal_CCTests, cv.getCoincidentCorrectIDS());
 
 			v.setTotalFailedCount(parser.getTotalFailedTestCaseCnt());
 			v.setTotalPassedCount(parser.getTotalPassedTestCaseCnt());
@@ -200,8 +200,8 @@ public class ProjectAnalyzer {
 		double t1 = calcSups(v,new TarantulaSusp(),tests,Constant.RELABLE,sa.getTarantulaRelabelExp());
 		double t2 = calcSups(v,new TarantulaSusp(),tests,Constant.DISCARD,sa.getTarantulaDiscardExp());
 		
-		double t3 = calcSups(v,new TarantulaSusp(),tests,Constant.RELABLE,sa.getTarantulaRelabelExp_ideal());
-		double t4 = calcSups(v,new TarantulaSusp(),tests,Constant.DISCARD,sa.getTarantulaDiscardExp_ideal());
+		double t3 = calcSups(v,new TarantulaSusp(),ideal_CCTests,Constant.RELABLE,sa.getTarantulaRelabelExp_ideal());
+		double t4 = calcSups(v,new TarantulaSusp(),ideal_CCTests,Constant.DISCARD,sa.getTarantulaDiscardExp_ideal());
 
 		tscoreReductionInfo.append(",").append(t0-t1).append(",").append(t0-t2).append(",").append(t0-t3)
 		.append(",").append(t0-t4).append("\n");
@@ -217,7 +217,7 @@ public class ProjectAnalyzer {
 		for (StatementSum eSum : map.values()) {
 			addSuspToList(suspList, technique, eSum);
 		}
-		return rank(v, suspList, ISuspsCalculator.class.getName(),exp, map);
+		return rank(v, suspList, ISuspsCalculator.class.getName(),exp, map)*100;
 	}
 
 	private double rank(Version v, List<AbstractSuspiciousness> susp, String fl,
