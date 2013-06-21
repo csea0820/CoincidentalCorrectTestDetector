@@ -23,6 +23,7 @@ public class ArffStatementGenerator {
 	String program = null;
 	int versionID;
 	AttributeFilter af = null;
+	private boolean pruneAttributes = false;
 	public List<TestCase> addCoincidentalCorrectnessInfo(List<TestCase> list,
 			String ccFilePath) {
 		Set<Integer> set = new HashSet<Integer>();
@@ -134,7 +135,7 @@ public class ArffStatementGenerator {
 			}
 		}
 		
-		if (passed == 1)
+		if (passed == 1 && pruneAttributes == true)
 		{
 			List<Integer> list = new ArrayList<Integer>();
 			for (Statement s : testCase.getStatements())
@@ -183,6 +184,7 @@ public class ArffStatementGenerator {
 		builder.append("@relation "+program+versionID+"\n");
 		
 		int attrCnt = af.getAttributeCount();
+		if (pruneAttributes == false)attrCnt = totalExecutableCodeCnt;
 //		System.out.println("attribute size = " + attrCnt + ",totalFailedTests = " + totalFailedTestCaseCnt);
 //		int attrCnt = totalExecutableCodeCnt;
 		
@@ -196,7 +198,9 @@ public class ArffStatementGenerator {
 			builder.append(tcs.get(i).getId());
 			for (int j = 0; j < tcs.get(i).getStatements().size(); j++)
 			{
-				if (af.filter(tcs.get(i).getStatements().get(j).getLineNumber()) == false)
+				if (af.filter(tcs.get(i).getStatements().get(j).getLineNumber()) == false && pruneAttributes == true)
+					builder.append(","+tcs.get(i).getStatements().get(j).getCount());
+				else
 					builder.append(","+tcs.get(i).getStatements().get(j).getCount());
 			}
 			builder.append("\n");
@@ -204,6 +208,10 @@ public class ArffStatementGenerator {
 		FileUtility.writeContentToFile(builder.toString(),programDir+"/output_statement_arff/v"+versionID+".arff");
 	}
 	
+	public void setPruneAttributes(boolean prune)
+	{
+		this.pruneAttributes = prune;
+	}
 	
 	public static void main(String[] args) {
 		
@@ -217,7 +225,9 @@ public class ArffStatementGenerator {
 			for (String s: args)
 			{
 				System.out.println("Analyzing Program " + s);
-				new ArffStatementGenerator().arffGenerator(s);
+				ArffStatementGenerator asg = new ArffStatementGenerator();
+				asg.setPruneAttributes(false);
+				asg.arffGenerator(s);
 			}
 		}
 	}
