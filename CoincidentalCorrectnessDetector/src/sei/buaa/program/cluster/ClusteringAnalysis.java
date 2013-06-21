@@ -80,6 +80,7 @@ public class ClusteringAnalysis {
 			
 		} catch (Exception e) {
 			e.printStackTrace();
+			System.err.println(arffFile);
 		}
 		
 //		for (Integer key : clusters.keySet())

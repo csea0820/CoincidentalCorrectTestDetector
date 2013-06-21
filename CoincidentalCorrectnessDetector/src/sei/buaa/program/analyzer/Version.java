@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import sei.buaa.program.utility.FileUtility;
+
 public class Version {
 
 	private int totalExecutableCode;

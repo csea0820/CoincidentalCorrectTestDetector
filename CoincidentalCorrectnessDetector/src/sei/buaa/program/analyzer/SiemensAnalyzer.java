@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import sei.buaa.program.cluster.StringUtility;
+import sei.buaa.program.utility.FileUtility;
 
 
 public class SiemensAnalyzer {

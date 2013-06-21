@@ -87,10 +87,21 @@ public class ProjectAnalyzer {
 				continue;
 			} else
 				singleFaultVersionsCnt++;
-
+			
 			List<TestCase> tests = parser.parser(programDir + "/"
 					+ Constant.OUT_PUT_DIR + "/v" + vid);
 
+			v.setTotalFailedCount(parser.getTotalFailedTestCaseCnt());
+			v.setTotalPassedCount(parser.getTotalPassedTestCaseCnt());
+			v.setTotalExecutableCode(parser.getTotalExecutableCodeCnt());
+			
+			if (v.getTotalFailedCount() == 0) {
+				diagnosisContent.append(
+						"program=" + programName + ",version=" + v.getVersionId()
+								+ " has no failed test cases").append("\n");
+				continue;
+			}
+			
 			List<TestCase> ideal_CCTests = new ArrayList<TestCase>();
 			for (TestCase t: tests)
 			{
@@ -103,10 +114,6 @@ public class ProjectAnalyzer {
 
 			addCoincidentalCorrectInfo(tests, cc);
 			addCoincidentalCorrectInfo(ideal_CCTests, cv.getCoincidentCorrectIDS());
-
-			v.setTotalFailedCount(parser.getTotalFailedTestCaseCnt());
-			v.setTotalPassedCount(parser.getTotalPassedTestCaseCnt());
-			v.setTotalExecutableCode(parser.getTotalExecutableCodeCnt());
 
 			analyzeVersion(v,tests,ideal_CCTests);	
 		}
@@ -179,12 +186,7 @@ public class ProjectAnalyzer {
 
 	public void analyzeVersion(Version v,List<TestCase> tests,List<TestCase> ideal_CCTests) {
 
-		if (v.getTotalFailedCount() == 0) {
-			diagnosisContent.append(
-					"program=" + programName + ",version=" + v.getVersionId()
-							+ " has no failed test cases").append("\n");
-			return;
-		}
+		
 
 		tscoreReductionInfo.append("v").append(v.getVersionId());
 		
