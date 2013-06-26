@@ -4,6 +4,8 @@ package sei.buaa.program.analyzer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import sei.buaa.program.cluster.ArffPredicateGenerator;
+import sei.buaa.program.cluster.ArffStatementGenerator;
 import sei.buaa.program.cluster.StringUtility;
 import sei.buaa.program.utility.FileUtility;
 
@@ -43,6 +45,12 @@ public class SiemensAnalyzer {
 		{
 			String programName = StringUtility.getBaseName(path);
 			System.out.println("analyzing program " + programName);
+			
+//			ArffPredicateGenerator asg = new ArffPredicateGenerator();
+//			asg.setPruneAttributes(true);
+//			asg.arffGenerator(path);
+//			asg.setK(0.6);
+			
 			ProjectAnalyzer pa = new ProjectAnalyzer(this,path,false,false);
 			pa.analyze();	
 			totalVersions += pa.getTotalVersions();

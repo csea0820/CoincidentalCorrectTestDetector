@@ -16,7 +16,7 @@ public class AttributeFilter {
 	
 	
 	private int totalFailedCnt = 0;
-	private double K = 1;
+	private double K = 0.6;
 	
 	class Entity implements Comparable<Entity>{
 		int lineNumber;
@@ -52,9 +52,7 @@ public class AttributeFilter {
 		totalFailedCnt++;
 	}
 	
-	/*
-	 * false:保留该属性；true:丢弃该属性
-	 */
+	/** false:保留该属性；true:丢弃该属性 */
 	public boolean filter(int lineNumber)
 	{
 		if (filter == null)
@@ -73,6 +71,10 @@ public class AttributeFilter {
 			if (e.executionCount >= threshold)
 				filter.add(e.lineNumber);
 		}	
+	}
+	
+	public void setK(double k) {
+		K = k;
 	}
 	
 	public int getAttributeCount()

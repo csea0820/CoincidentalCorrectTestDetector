@@ -200,7 +200,7 @@ public class ArffStatementGenerator {
 			{
 				if (af.filter(tcs.get(i).getStatements().get(j).getLineNumber()) == false && pruneAttributes == true)
 					builder.append(","+tcs.get(i).getStatements().get(j).getCount());
-				else
+				else if (pruneAttributes == false)
 					builder.append(","+tcs.get(i).getStatements().get(j).getCount());
 			}
 			builder.append("\n");
@@ -226,7 +226,7 @@ public class ArffStatementGenerator {
 			{
 				System.out.println("Analyzing Program " + s);
 				ArffStatementGenerator asg = new ArffStatementGenerator();
-				asg.setPruneAttributes(false);
+				asg.setPruneAttributes(true);
 				asg.arffGenerator(s);
 			}
 		}
