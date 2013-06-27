@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,11 +34,14 @@ public class Version {
 	double false_positive = 0.0;
 	double false_negative = 0.0;
 	
-	public Version(String programDIR,int versinID)
+	ISampleStrategy  sampleStrategy = null;	
+	
+	public Version(String programDIR,int versinID,ISampleStrategy sampleStrategy)
 	{
 		this.programDIR = programDIR;
 		this.versionID = versinID;
 		this.programName = StringUtility.getBaseName(programDIR);
+		this.sampleStrategy = sampleStrategy;
 		
 		failedTestCaseIDS = new HashSet<Integer>();
 		passedTestCaseIDS = new HashSet<Integer>();
@@ -45,33 +49,13 @@ public class Version {
 	}
 	
 	//使用聚类算法进行聚类，通过采样算法选择聚类产生的簇作为结果并返回。同时计算false positive及false negative。
-	public Set<Integer> analyzeCoincidentalCorrectness()
+	public Set<Integer> analyzeCoincidentalCorrectness(List<sei.buaa.program.analyzer.TestCase> tests)
 	{
 		readTestCaseResult(programDIR+"/outputs_predicate/v"+versionID);
 		readCoincidentalCorrectTests(programDIR+"/coincidentalCorrectness/coincidentalCorrectness_v"+versionID);
 		ClusteringAnalysis ca = new ClusteringAnalysis();
-		Map<Integer,Set<Integer>> cluster = ca.cluster(programDIR+"/output_statement_arff/"+programName+"_v"+versionID+".arff");
-	
-		Set<Integer> result = new HashSet<Integer>();
-		
-		for (Integer key: cluster.keySet())
-		{
-			Set<Integer> set = cluster.get(key);
-			for (Integer failedTestID : failedTestCaseIDS)
-			{
-				if (set.contains(failedTestID))
-				{
-					result.addAll(set);
-					break;
-				}
-			}
-		}
-		
-		for (Integer v : failedTestCaseIDS)
-			if (result.contains(v))
-				result.remove(v);
-		
-		
+		Map<Integer,Set<Integer>> cluster = ca.cluster(programDIR+"/output_statement_arff/"+programName+"_v"+versionID+".arff");	
+		Set<Integer> result = sampleStrategy.sample(cluster,tests);
 		m_returned_tests = result.size();
 		m_all_relevant_test = coincidentCorrectIDS.size();
 		
@@ -158,8 +142,8 @@ public class Version {
 	
 	public static void main(String[] args)
 	{
-		Version v = new Version("/Users/csea/Documents/Experiment/Siemens/print_tokens",7);
-		v.analyzeCoincidentalCorrectness();
+		Version v = new Version("/Users/csea/Documents/Experiment/Siemens/print_tokens",7, new SampleByFailedTests());
+//		v.analyzeCoincidentalCorrectness();
 	}
 	
 }

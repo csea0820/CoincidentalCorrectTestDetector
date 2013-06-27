@@ -21,8 +21,8 @@ public class CoincidentalCorrectTask {
 		initAnalyzedVersions(programDir+"/faults.txt");
 		for (Integer id : versionIds)
 		{
-			Version v = new Version(programDir, id);
-			v.analyzeCoincidentalCorrectness();
+			Version v = new Version(programDir, id,new SampleByFailedTests());
+			//v.analyzeCoincidentalCorrectness();
 			builder.append(v.getResultInfo()).append("\n");
 		}
 	}

@@ -26,7 +26,7 @@ public class ClusteringAnalysis {
 		
 	}
 	
-	
+	/** 返回<簇号,用例集>*/
 	public Map<Integer,Set<Integer>> cluster(String arffFile)
 	{
 		Instances insts = null;

@@ -24,6 +24,8 @@ public class ArffStatementGenerator {
 	int versionID;
 	AttributeFilter af = null;
 	private boolean pruneAttributes = false;
+	private boolean failedTestsArffGenerate = true;
+	private double K = 1;
 	public List<TestCase> addCoincidentalCorrectnessInfo(List<TestCase> list,
 			String ccFilePath) {
 		Set<Integer> set = new HashSet<Integer>();
@@ -79,7 +81,7 @@ public class ArffStatementGenerator {
 		int passed = StringUtility.getDigit(fileName, fileName.length() - 1);
 		int testCaseId = StringUtility.getDigit(fileName, fileName.length()-3);
 
-		if (passed == 1)
+		if (passed == 1)	
 			totalFailedTestCaseCnt++;
 		else
 			totalPassedTestCaseCnt++;
@@ -144,6 +146,7 @@ public class ArffStatementGenerator {
 			af.count(list);
 		}
 		
+		if (failedTestsArffGenerate == false && passed == 1)return null;
 		return  testCase;
 	}
 	
@@ -156,6 +159,7 @@ public class ArffStatementGenerator {
 		File[] files = dir.listFiles();
 		for (File file : files) {
 			af = new AttributeFilter();
+			af.setK(K);
 			versionID = Integer.valueOf(file.getName().substring(1));
 			generator(file.getAbsolutePath());		
 		}
@@ -170,7 +174,8 @@ public class ArffStatementGenerator {
 			File[] files = dir.listFiles();
 			for (File file : files) {
 				sei.buaa.program.analyzer.TestCase tc = parseTestCase(file.getAbsolutePath());
-					tcs.add(tc);
+					if (tc != null)
+						tcs.add(tc);
 			}
 		} else {
 			System.err.println(programDir + " is not a directory!");
@@ -213,6 +218,26 @@ public class ArffStatementGenerator {
 		this.pruneAttributes = prune;
 	}
 	
+	public int getTotalFailedTestCaseCnt() {
+		return totalFailedTestCaseCnt;
+	}
+
+	public int getTotalPassedTestCaseCnt() {
+		return totalPassedTestCaseCnt;
+	}
+
+	public int getTotalExecutableCodeCnt() {
+		return totalExecutableCodeCnt;
+	}
+	
+	public void setK(double k) {
+		K = k;
+	}
+	
+	public void setFailedTestsArffGenerate(boolean failedTestsArffGenerate) {
+		this.failedTestsArffGenerate = failedTestsArffGenerate;
+	}
+	
 	public static void main(String[] args) {
 		
 		if (args.length == 0)
@@ -226,22 +251,10 @@ public class ArffStatementGenerator {
 			{
 				System.out.println("Analyzing Program " + s);
 				ArffStatementGenerator asg = new ArffStatementGenerator();
-				asg.setPruneAttributes(true);
+				asg.setPruneAttributes(false);
+				asg.setFailedTestsArffGenerate(false);
 				asg.arffGenerator(s);
 			}
 		}
 	}
-
-	public int getTotalFailedTestCaseCnt() {
-		return totalFailedTestCaseCnt;
-	}
-
-	public int getTotalPassedTestCaseCnt() {
-		return totalPassedTestCaseCnt;
-	}
-
-	public int getTotalExecutableCodeCnt() {
-		return totalExecutableCodeCnt;
-	}
-
 }

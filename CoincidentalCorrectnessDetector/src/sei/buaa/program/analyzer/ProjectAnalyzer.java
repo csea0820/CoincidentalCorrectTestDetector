@@ -5,13 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import sei.buaa.program.cluster.SampleByFailedTests;
 import sei.buaa.program.cluster.StringUtility;
 
 public class ProjectAnalyzer {
@@ -30,8 +30,6 @@ public class ProjectAnalyzer {
 	int totalTestsCnt = 0;
 	private StringBuilder diagnosisContent = new StringBuilder(10000);
 
-	private StringBuilder expenseSummary = null;
-
 	private StringBuilder tscoreReductionInfo = new StringBuilder();
 	
 	SiemensAnalyzer sa;
@@ -41,7 +39,6 @@ public class ProjectAnalyzer {
 			boolean coincidentalCorrectnessAbandon) {
 		this.programDir = programDir;
 		this.sa = sa;
-		this.expenseSummary = sa.getExpenseSummary();
 		totalVersions = 0;
 		singleFaultVersionsCnt = 0;
 		nonFaultVersionsCnt = 0;
@@ -109,8 +106,8 @@ public class ProjectAnalyzer {
 			}
 			
 			sei.buaa.program.cluster.Version cv = new sei.buaa.program.cluster.Version(
-					programDir, vid);
-			Set<Integer> cc = cv.analyzeCoincidentalCorrectness();
+					programDir, vid,new SampleByFailedTests());
+			Set<Integer> cc = cv.analyzeCoincidentalCorrectness(tests);
 
 			addCoincidentalCorrectInfo(tests, cc);
 			addCoincidentalCorrectInfo(ideal_CCTests, cv.getCoincidentCorrectIDS());
