@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import sei.buaa.program.cluster.SampleByClusterSuspicious;
 import sei.buaa.program.cluster.SampleByFailedTests;
 import sei.buaa.program.cluster.StringUtility;
 
@@ -87,7 +88,6 @@ public class ProjectAnalyzer {
 			
 			List<TestCase> tests = parser.parser(programDir + "/"
 					+ Constant.OUT_PUT_DIR + "/v" + vid);
-
 			v.setTotalFailedCount(parser.getTotalFailedTestCaseCnt());
 			v.setTotalPassedCount(parser.getTotalPassedTestCaseCnt());
 			v.setTotalExecutableCode(parser.getTotalExecutableCodeCnt());
@@ -106,7 +106,7 @@ public class ProjectAnalyzer {
 			}
 			
 			sei.buaa.program.cluster.Version cv = new sei.buaa.program.cluster.Version(
-					programDir, vid,new SampleByFailedTests());
+					programDir, vid,new SampleByClusterSuspicious());
 			Set<Integer> cc = cv.analyzeCoincidentalCorrectness(tests);
 
 			addCoincidentalCorrectInfo(tests, cc);

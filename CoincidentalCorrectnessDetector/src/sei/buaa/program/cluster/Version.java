@@ -54,7 +54,7 @@ public class Version {
 		readTestCaseResult(programDIR+"/outputs_predicate/v"+versionID);
 		readCoincidentalCorrectTests(programDIR+"/coincidentalCorrectness/coincidentalCorrectness_v"+versionID);
 		ClusteringAnalysis ca = new ClusteringAnalysis();
-		Map<Integer,Set<Integer>> cluster = ca.cluster(programDIR+"/output_statement_arff/"+programName+"_v"+versionID+".arff");	
+		Map<Integer,Set<Integer>> cluster = ca.cluster(programDIR+"/output_statement_arff/v"+versionID+".arff");	
 		Set<Integer> result = sampleStrategy.sample(cluster,tests);
 		m_returned_tests = result.size();
 		m_all_relevant_test = coincidentCorrectIDS.size();
