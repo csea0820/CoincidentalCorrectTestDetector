@@ -108,6 +108,7 @@ public class ProjectAnalyzer {
 			sei.buaa.program.cluster.Version cv = new sei.buaa.program.cluster.Version(
 					programDir, vid,new SampleByClusterSuspicious());
 			Set<Integer> cc = cv.analyzeCoincidentalCorrectness(tests);
+			sa.addToFnAndFp(cv.getFNandFP());
 
 			addCoincidentalCorrectInfo(tests, cc);
 			addCoincidentalCorrectInfo(ideal_CCTests, cv.getCoincidentCorrectIDS());

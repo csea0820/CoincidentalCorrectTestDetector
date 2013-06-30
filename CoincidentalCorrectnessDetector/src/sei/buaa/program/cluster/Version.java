@@ -81,6 +81,16 @@ public class Version {
 		return programName+"_v"+versionID+","+false_positive+","+false_negative;
 	}
 	
+	public int[] getFNandFP()
+	{
+		int [] res = new int[4];
+		res[0] =  m_all_relevant_test-m_returned_relevant_tests;
+		res[1] = m_all_relevant_test;
+		res[2] = m_returned_tests-m_returned_relevant_tests;
+		res[3] = passedTestCaseIDS.size()-m_all_relevant_test;
+		return res;
+	}
+	
 		
 	
 	private void readCoincidentalCorrectTests(String resultDir)

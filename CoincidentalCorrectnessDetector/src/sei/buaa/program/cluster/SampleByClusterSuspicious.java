@@ -56,7 +56,7 @@ public class SampleByClusterSuspicious implements ISampleStrategy {
 		List<ClusterEntity> clusters = new ArrayList<ClusterEntity>();
 
 		Map<Integer, Integer> statistics = failedExecutionSummary(tests);
-
+		
 //		System.out.println(statistics);
 		
 		sei.buaa.program.analyzer.TestCase[] testCases = new sei.buaa.program.analyzer.TestCase[tests
@@ -111,6 +111,13 @@ public class SampleByClusterSuspicious implements ISampleStrategy {
 		return result;
 	}
 
+	//
+	private Map<Integer,Integer> failedExecutionSummary_1(){
+		Map<Integer, Integer> statistics = new TreeMap<Integer, Integer>();
+		
+		return statistics;
+	}
+	
 	private Map<Integer, Integer> failedExecutionSummary(
 			List<sei.buaa.program.analyzer.TestCase> tests) {
 		Map<Integer, Integer> statistics = new TreeMap<Integer, Integer>();

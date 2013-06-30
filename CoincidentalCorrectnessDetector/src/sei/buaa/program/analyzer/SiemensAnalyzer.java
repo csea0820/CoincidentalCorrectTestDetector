@@ -25,7 +25,7 @@ public class SiemensAnalyzer {
 	Expensive ochiaiExp = new Expensive(Constant.OCHIAI);
 	Expensive sbiExp = new Expensive(Constant.SBI);
 	
-	
+	int[] fnAndFp = new int[4];
 
 
 	
@@ -95,6 +95,9 @@ public class SiemensAnalyzer {
 			a += 1;
 		}
 		
+		sb.append("false negative = ").append(fnAndFp[0]*1.0/fnAndFp[1]).append(",false positve = ")
+		  .append(fnAndFp[2]*1.0/fnAndFp[3]);
+		
 		System.out.println(sb.toString());
 		FileUtility.writeContentToFile(sb.toString(), "/Users/csea/Documents/Experiment/Siemens/result/"+getCurrentDate()+".result");
 //		System.out.println(expenseSummary.toString());
@@ -116,6 +119,12 @@ public class SiemensAnalyzer {
 		return jaccardExp;
 	}
 
+	public void addToFnAndFp(int res[])
+	{
+		for (int i = 0; i < 4; i++)
+			fnAndFp[i] += res[i];
+	}
+	
 	public Expensive getOchiaiExp() {
 		return ochiaiExp;
 	}
